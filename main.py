@@ -1,27 +1,56 @@
 from bridges.bridges import *
-from bridges.data_src_dependent import *
-import sys
-import random
+from bridges.data_src_dependent import data_source
+from bridges.graph_adj_list import GraphAdjList
 
 def main():
-    # create the Bridges object, set credentials
-    bridges = Bridges(YOUR_ASSSIGNMENT_NUMBER, "YOUR_USER_ID", "YOUR_API_KEY")
+    print("Fetching OSM data for UF...")
 
-    bridges.set_title("OpenStreet Map Data Access Example")
+    bridges = Bridges(999, "JosephGuzman", "776326189690")
+    bridges.set_title("UF Campus OSM Graph")
+    bridges.set_description("OpenStreetMap graph of the University of Florida campus")
 
-    # get the OsmData
-    osmdata = data_source.get_osm_data("Charlotte, North Carolina", "default")
-    # Alternatively, one can use a bounding box in latitude and longitude:
-    # osmdata = data_source.get_osm_data(35.28, -80.75, 35.32, -80.71, "default")
+    # Bounding box around UF campus
+    lat_min = 29.630
+    long_min = -82.370
+    lat_max = 29.660
+    long_max = -82.320
 
+    # Fetch OSM data
+    osmdata = data_source.get_osm_data(lat_min, long_min, lat_max, long_max, "default")
     vertices = osmdata.vertices
     edges = osmdata.edges
 
-    print ("Number of Vertices [Charlotte]: " + str(len(vertices)))
-    print ("Number of Edges [Charlotte]: " + str(len(edges)))
+    print(f"Fetched {len(vertices)} vertices and {len(edges)} edges")
+    print("Edge sample:", vars(edges[0]))  # You can now remove this line if everything works
 
-    print ("Position of first vertex: lat="+str(vertices[0].latitude)+
-           " long="+ str(vertices[0].longitude));
+    # Use list index as vertex ID
+    vertex_lookup = {}
+    for i, v in enumerate(vertices):
+        vertex_lookup[i] = v
 
-    print ("Cartesian Coordinate of first vertex: "+str(vertices[0].cartesian_coord[0])+
-           ", "+ str(vertices[0].cartesian_coord[1]));
+    graph = GraphAdjList()
+
+    for e in edges:
+        from_id = e._source
+        to_id = e._destination
+        weight = e._distance
+
+        graph.add_vertex(from_id, str(from_id))
+        graph.add_vertex(to_id, str(to_id))
+
+        if from_id in vertex_lookup:
+            v_from = vertex_lookup[from_id]
+            graph.get_visualizer(from_id).set_location(v_from._latitude, v_from._longitude)
+
+        if to_id in vertex_lookup:
+            v_to = vertex_lookup[to_id]
+            graph.get_visualizer(to_id).set_location(v_to._latitude, v_to._longitude)
+
+        graph.add_edge(from_id, to_id, weight)
+        graph.add_edge(to_id, from_id, weight)
+
+    bridges.set_data_structure(graph)
+    bridges.visualize()
+
+if __name__ == "__main__":
+    main()
