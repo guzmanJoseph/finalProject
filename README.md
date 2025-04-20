@@ -22,3 +22,6 @@ This app provides a user-friendly interface that computes and visualizes the sho
 - Install streamlit and bridges packages
 - Run the following line in your terminal: streamlit run app.py
 - This will open a url in your browser
+
+## Additional
+Our group used the CodeWithMe feature on PyCharm to collaborate on this project
