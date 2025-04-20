@@ -19,6 +19,7 @@ This app provides a user-friendly interface that computes and visualizes the sho
 - OpenStreet Map for map data
 
 ## Running the code
+- Install streamlit and bridges packages
 Run the following line in your terminal:
-streamlit run app.py
+- streamlit run app.py
 This will open a url in your browser
