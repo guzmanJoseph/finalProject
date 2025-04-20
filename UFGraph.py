@@ -73,7 +73,6 @@ class UFGraph:
             from_id = e._source
             to_id = e._destination
             weight = e._distance
-            # add and label from_id
             graph.add_vertex(from_id, str(from_id))
             if from_id in self.location_labels:
                 graph.get_vertex(from_id).label = self.location_labels[from_id]
