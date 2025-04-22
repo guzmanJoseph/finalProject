@@ -59,6 +59,7 @@ class UFGraph:
             802: "Bat Houses"
         }
 
+
         vertices = osmdata.vertices
         edges = osmdata.edges
 
@@ -190,9 +191,10 @@ class UFGraph:
 
         # initial f_score
         source_node = osm_data.get_vertex(source)
-        differenceInLatitude = source_node.latitude - target_lat
-        differenceInLongitude = source_node.longitude - target_lon
-        f_score[source] = math.sqrt(differenceInLatitude ** 2 + differenceInLongitude ** 2)
+        f_score[source] = self.euclideanDistance(
+            source_node.latitude, source_node.longitude,
+            target_lat, target_lon
+        )
 
         # lookup for edge distances
         edge_lookup = {(e.source, e.destination): e for e in osm_data.edges}
@@ -221,9 +223,10 @@ class UFGraph:
                 # get neighbor coordinates from visualizer
                     try:
                         neighbor_node = osm_data.get_vertex(neighbor)
-                        dx = neighbor_node.latitude - target_lat
-                        dy = neighbor_node.longitude - target_lon
-                        heuristic = math.sqrt(dx * dx + dy * dy)
+                        heuristic = self.euclideanDistance(
+                            neighbor_node.latitude, neighbor_node.longitude,
+                            target_lat, target_lon
+                        )
 
                     except Exception as e:
                         print(f"Couldn't get location for neighbor")
@@ -255,10 +258,15 @@ class UFGraph:
 
             differenceInLatitude = node.latitude - lat
             differenceInLongitude = node.longitude - long
-            dist = math.sqrt(differenceInLatitude * differenceInLongitude + differenceInLongitude * differenceInLongitude)
+            dist = self.euclideanDistance(node.latitude, node.longitude, lat, long)
 
             if dist < min_dist:
                 min_dist = dist
                 closest_node = node_id
 
         return closest_node
+
+    def euclideanDistance(self, lat1, lon1, lat2, lon2):
+        dx = lat1 - lat2
+        dy = lon1 - lon2
+        return math.sqrt(dx ** 2 + dy ** 2)
