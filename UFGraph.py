@@ -3,6 +3,7 @@ from bridges.data_src_dependent import *
 from bridges.graph_adj_list import *
 import heapq
 import math
+import random
 
 # class for  UF campus graph
 class UFGraph:
@@ -270,3 +271,9 @@ class UFGraph:
         dx = lat1 - lat2
         dy = lon1 - lon2
         return math.sqrt(dx ** 2 + dy ** 2)
+
+    def getRandomLandmark(self):
+        if not hasattr(self, 'location_labels') or not self.location_labels:
+            return None
+        node_id = random.choice(list(self.location_labels.keys()))
+        return node_id, self.location_labels[node_id]
